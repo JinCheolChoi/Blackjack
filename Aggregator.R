@@ -72,10 +72,10 @@ Expected_Profits=as.data.table(
                 c(a, b, c, d)[Which_Strategy]
               }
             },
-            Strategies_H_Profits[Hand==x, 2:11]/Strategies_Volumes[Hand==x, 2:11],
-            Strategies_S_Profits[Hand==x, 2:11]/Strategies_Volumes[Hand==x, 2:11],
-            Strategies_D_Profits[Hand==x, 2:11]/Strategies_Volumes[Hand==x, 2:11],
-            Strategies_SP_Profits[Hand==x, 2:11]/Strategies_Volumes[Hand==x, 2:11]
+            round(Strategies_H_Profits[Hand==x, 2:11]/Strategies_Volumes[Hand==x, 2:11], 3),
+            round(Strategies_S_Profits[Hand==x, 2:11]/Strategies_Volumes[Hand==x, 2:11], 3),
+            round(Strategies_D_Profits[Hand==x, 2:11]/Strategies_Volumes[Hand==x, 2:11], 3),
+            round(Strategies_SP_Profits[Hand==x, 2:11]/Strategies_Volumes[Hand==x, 2:11], 3)
             # Strategies_Sur_Profits[Hand==x, 2:11]
             )
         }
@@ -124,7 +124,7 @@ Weighted_Profits[,
 # Winning_Rates
 Winning_Rates=cbind(
   Hand=Strategies_Counts$Hand,
-  Strategies_Wins[, 2:11]/Strategies_Volumes[, 2:11]
+  round(Strategies_Wins[, 2:11]/Strategies_Volumes[, 2:11], 3)
 )
 
 

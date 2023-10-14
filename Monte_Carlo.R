@@ -1,6 +1,6 @@
 while(TRUE){
   # reshuffle the deck if there is less than 30% cards remaining
-  if(length(Deck_Pile)<N_Decks*52*0.3){
+  if(length(Deck_Pile)<N_Decks*52*0.2){
     Deck_Pile=rep(
       # a deck of 52 cards
       rep(c("A", 2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10), # the last three are J, Q, and, K
@@ -109,7 +109,8 @@ while(TRUE){
                Pre_Dealer_Hand=paste(sort(Dealer_Hand, decreasing=TRUE), collapse=","),
                Dealer_Hand=paste(sort(Dealer_Hand, decreasing=TRUE), collapse=","),
                Result=Result_Temp,
-               Profit=Profit_Temp
+               Profit=Profit_Temp,
+               Revealed_Dealer_Hand=Revealed_Dealer_Hand
              )
              Betting_Results=rbind(Betting_Results,
                                    Results)
@@ -304,7 +305,8 @@ while(TRUE){
   
   Possible_Moves[Strategy=="Split_A",
                  Strategy:="Split"]
-  Possible_Moves[, Pre_Dealer_Hand:=list(Dealer_Hand)]
+  Possible_Moves[, Pre_Dealer_Hand:=rep(list(Dealer_Hand),
+                                        nrow(Possible_Moves))]
   
   Results=cbind(
     Possible_Moves,
@@ -318,7 +320,8 @@ while(TRUE){
                                 Deck_Pile=x$Deck_Pile,
                                 Strategy=x$Strategy)
             })
-    )
+    ),
+    Revealed_Dealer_Hand
   )
   
   # Simulation

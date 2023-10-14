@@ -85,6 +85,7 @@ Best_Strategies
 Expected_Profits
 Winning_Rates
 
+# weighted profit
 sum(Weighted_Profits[!Which_NaN_1, -1])/sum(Strategies_Volumes[, 2:11])
 
 # plot
@@ -93,4 +94,27 @@ Betting_Results[, cumsum(Profit)] %>% plot
 # save.image(paste0(dir.path, "Rdata/", Min_Value, ".Rdata"))
 # load(paste0(dir.path, "Rdata/", Min_Value, ".Rdata"))
 
-Betting_Results[Result=="Bust", Row]
+# Betting_Results[,
+#                 Hand:=sapply(Betting_Results[, Pre_Hand],
+#                              function(x){
+#                                if(length(x)==2 &
+#                                   is.pair(x)){
+#                                  Row=paste0(sort(x, decreasing=TRUE), collapse=",")
+#                                }else if(length(x)==2 &
+#                                         is.A(x)){
+#                                  Row=paste0(sort(x, decreasing=TRUE), collapse=",")
+#                                }else if(length(x)==2 &
+#                                         !is.pair(x) &
+#                                         !is.A(x)){
+#                                  Row=Value_Calculator(x)
+#                                }else if(length(x)>2){
+#                                  Row=Value_Calculator(x)
+#                                }
+#                                Row
+#                              })
+# ]
+
+Winning_Rates
+
+Betting_Results[100:150, ]
+Betting_Results[, cumsum(Profit)][100:200] %>% plot
