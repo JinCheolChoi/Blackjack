@@ -11,8 +11,8 @@ rm(list=ls())
 # set directory path
 #
 #*******************
-# dir.path="C:/Users/jchoi02/Desktop/R/Blackjack/"
-dir.path="C:/Users/JinCheol Choi/Desktop/R/Blackjack/"
+dir.path="C:/Users/jchoi02/Desktop/R/Blackjack/"
+# dir.path="C:/Users/JinCheol Choi/Desktop/R/Blackjack/"
 
 #*******
 #

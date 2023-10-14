@@ -48,10 +48,9 @@ while(TRUE){
              Profit_Temp=0
              Win_Temp=0
              Draw_Temp=1
-           }
-           # scenario #2
-           # if only my hand is blackjack
-           else if(!is.blackjack(Dealer_Hand)){
+           }else if(!is.blackjack(Dealer_Hand)){
+             # scenario #2
+             # if only my hand is blackjack
              Profit_Temp=Betting*1.5
              Win_Temp=1
              Draw_Temp=0
@@ -93,13 +92,10 @@ while(TRUE){
            
            # Simulation
            if(Simulation){
-             if(Win_Temp==1){
+             if(Win_Temp==1 & Draw_Temp==0){
                Result_Temp="Win"
-             }else{
-               Result_Temp=""
-             }
-             if(Draw_Temp==1){
-               Result_Temp="Win"
+             }else if(Win_Temp==0 & Draw_Temp==1){
+               Result_Temp="Draw"
              }else{
                Result_Temp=""
              }

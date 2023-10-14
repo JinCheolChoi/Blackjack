@@ -11,8 +11,8 @@ rm(list=ls())
 # set directory path
 #
 #*******************
-# dir.path="C:/Users/jchoi02/Desktop/R/Blackjack/"
-dir.path="C:/Users/JinCheol Choi/Desktop/R/Blackjack/"
+dir.path="C:/Users/jchoi02/Desktop/R/Blackjack/"
+# dir.path="C:/Users/JinCheol Choi/Desktop/R/Blackjack/"
 
 #*******
 #
@@ -21,10 +21,10 @@ dir.path="C:/Users/JinCheol Choi/Desktop/R/Blackjack/"
 #*******
 library(data.table)
 source(paste0(dir.path, "Blackjack_Functions.R"))
-Best_Strategies=fread(paste0(dir.path, "Best_Strategies.csv"),
-                      header=T)
-# Best_Strategies=fread(paste0(dir.path, "Strategies.csv"),
+# Best_Strategies=fread(paste0(dir.path, "Best_Strategies.csv"),
 #                       header=T)
+Best_Strategies=fread(paste0(dir.path, "Strategies - Copy.csv"),
+                      header=T)
 Strategies_Profits=copy(Best_Strategies)
 Strategies_Profits[, 2:11]=as.numeric(0)
 Cols=c("2", "3", "4", "5", "6", "7", "8", "9", "10", "A")
@@ -52,8 +52,8 @@ Strategies_Sur_Profits[, 2:11]=as.numeric(-Inf) # if Sur is not allowed
 #***********
 Bankroll=100
 Betting=1
-N_Decks=8
-N_Players=4
+N_Decks=6
+N_Players=2
 Min_Value=21 # Min_Value<=21
 Deck_Pile=rep(
   # a deck of 52 cards
@@ -92,3 +92,5 @@ Betting_Results[, cumsum(Profit)] %>% plot
 
 # save.image(paste0(dir.path, "Rdata/", Min_Value, ".Rdata"))
 # load(paste0(dir.path, "Rdata/", Min_Value, ".Rdata"))
+
+Betting_Results[Result=="Bust", Row]
