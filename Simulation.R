@@ -11,7 +11,8 @@ rm(list=ls())
 # set directory path
 #
 #*******************
-dir.path="C:/Users/jchoi02/Desktop/R/Blackjack/"
+# dir.path="C:/Users/jchoi02/Desktop/R/Blackjack/"
+dir.path="C:/Users/JinCheol Choi/Desktop/R/Blackjack/"
 
 #*******
 #
@@ -80,7 +81,6 @@ sum(Strategies_Volumes[, 2:11])
 
 # put the results together
 source(paste0(dir.path, "Aggregator.R"))
-
 Best_Strategies
 Expected_Profits
 Winning_Rates

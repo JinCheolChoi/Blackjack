@@ -11,7 +11,8 @@ rm(list=ls())
 # set directory path
 #
 #*******************
-dir.path="C:/Users/jchoi02/Desktop/R/Blackjack/"
+# dir.path="C:/Users/jchoi02/Desktop/R/Blackjack/"
+dir.path="C:/Users/JinCheol Choi/Desktop/R/Blackjack/"
 
 #*******
 #
@@ -51,7 +52,7 @@ Bankroll=100
 Betting=1
 N_Decks=8
 N_Players=4
-Min_Value=21 # Min_Value<=21
+Min_Value=15 # Min_Value<=21
 Deck_Pile=rep(
   # a deck of 52 cards
   rep(c("A", 2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10), # the last three are J, Q, and, K
@@ -75,10 +76,10 @@ sum(Strategies_Volumes[, 2:11])
 
 # put the results together
 source(paste0(dir.path, "Aggregator.R"))
-
 Best_Strategies
 Expected_Profits
 Winning_Rates
+
 # fwrite(Best_Strategies,
 #        paste0(dir.path, "Best_Strategies.csv"))
 sum(Weighted_Profits[!Which_NaN_1, -1])/sum(Strategies_Volumes[, 2:11])
