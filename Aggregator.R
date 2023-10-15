@@ -14,6 +14,7 @@ Which_NaN_3=Which_NaN_2|sapply(Strategies_Counts$Hand,
 Strategies_H_Profits[Which_NaN_2, c(2:11)]=NaN
 Strategies_S_Profits[Which_NaN_1, c(2:11)]=NaN
 Strategies_D_Profits[Which_NaN_2, c(2:11)]=NaN
+Strategies_D_Profits[Hand%in%c("20", "21"), c(2:11)]=NaN # Double_Down cannot be done after hitting!
 Strategies_SP_Profits[Which_NaN_3, c(2:11)]=NaN
 Strategies_Sur_Profits[Which_NaN_1, c(2:11)]=NaN
 

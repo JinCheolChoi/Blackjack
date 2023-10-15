@@ -1,7 +1,7 @@
 run_ind=0
 while(TRUE){
   run_ind=run_ind+1
-  if(run_ind%%100==0){
+  if(run_ind%%500==0){
     source(paste0(dir.path, "Aggregator.R"))
   }
   
@@ -179,6 +179,7 @@ while(TRUE){
         )
         
         # Double_Down
+        # Double_Down cannot be done after hitting!
         if(Possible_Moves_Temp[ind, Strategy]%in%c("Split", "Origin")){
           Possible_Moves=rbind(
             Possible_Moves,
