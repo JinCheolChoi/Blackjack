@@ -25,21 +25,22 @@ source(paste0(dir.path, "Blackjack_Functions.R"))
 #                       header=T)
 Best_Strategies=fread(paste0(dir.path, "Strategies - Copy.csv"),
                       header=T)
-Strategies_Profits=copy(Best_Strategies)
-Strategies_Profits[, 2:11]=as.numeric(0)
+Strategies_Temp=copy(Best_Strategies)
+Strategies_Temp[, 2:11]=as.numeric(0)
 Cols=c("2", "3", "4", "5", "6", "7", "8", "9", "10", "A")
-Strategies_Profits[, (Cols):=lapply(.SD, as.numeric), .SDcols=Cols]
-Strategies_Counts=copy(Strategies_Profits)
-Strategies_Volumes=copy(Strategies_Profits)
-Strategies_Wins=copy(Strategies_Profits)
-Strategies_Draws=copy(Strategies_Profits)
-Strategies_Loses=copy(Strategies_Profits)
-Strategies_Busts=copy(Strategies_Profits)
-Strategies_H_Profits=copy(Strategies_Profits)
-Strategies_S_Profits=copy(Strategies_Profits)
-Strategies_D_Profits=copy(Strategies_Profits)
-Strategies_SP_Profits=copy(Strategies_Profits)
-Strategies_Sur_Profits=copy(Strategies_Profits)
+Strategies_Temp[, (Cols):=lapply(.SD, as.numeric), .SDcols=Cols]
+Strategies_Counts=copy(Strategies_Temp)
+Strategies_Volumes=copy(Strategies_Temp)
+Strategies_Wins=copy(Strategies_Temp)
+Strategies_Draws=copy(Strategies_Temp)
+Strategies_Loses=copy(Strategies_Temp)
+Strategies_Busts=copy(Strategies_Temp)
+Strategies_H_Profits=copy(Strategies_Temp)
+Strategies_S_Profits=copy(Strategies_Temp)
+Strategies_D_Profits=copy(Strategies_Temp)
+Strategies_SP_Profits=copy(Strategies_Temp)
+Strategies_Sur_Profits=copy(Strategies_Temp)
+rm(Strategies_Temp)
 
 # Surrender profit is expected to be always -0.5*Betting
 # Strategies_Sur_Profits[, 2:11]=as.numeric(-0.5*Betting)
@@ -64,6 +65,7 @@ Deck_Pile=rep(
 
 #
 Simulation=TRUE
+Update_Best_Strategies=FALSE
 
 #
 Betting_Results=c()

@@ -1,8 +1,23 @@
 run_ind=0
 while(TRUE){
-  run_ind=run_ind+1
-  if(run_ind%%500==0){
-    source(paste0(dir.path, "Aggregator.R"))
+  if(Simulation==TRUE){
+    if(Update_Best_Strategies==TRUE){
+      run_ind=run_ind+1
+      if(run_ind%%500==0){
+        # # refresh all aggregate quantities
+        # Strategies_Counts=copy(Strategies_Temp)
+        # Strategies_Volumes=copy(Strategies_Temp)
+        # Strategies_Wins=copy(Strategies_Temp)
+        # Strategies_Draws=copy(Strategies_Temp)
+        # Strategies_Loses=copy(Strategies_Temp)
+        # Strategies_Busts=copy(Strategies_Temp)
+        # Strategies_H_Profits=copy(Strategies_Temp)
+        # Strategies_S_Profits=copy(Strategies_Temp)
+        # Strategies_D_Profits=copy(Strategies_Temp)
+        # Strategies_SP_Profits=copy(Strategies_Temp)
+        source(paste0(dir.path, "Aggregator.R"))
+      }
+    }
   }
   
   # reshuffle the deck if there is less than 30% cards remaining
