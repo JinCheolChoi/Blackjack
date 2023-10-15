@@ -1,4 +1,10 @@
+run_ind=0
 while(TRUE){
+  run_ind=run_ind+1
+  if(run_ind%%100==0){
+    source(paste0(dir.path, "Aggregator.R"))
+  }
+  
   # reshuffle the deck if there is less than 30% cards remaining
   if(length(Deck_Pile)<N_Decks*52*0.2){
     Deck_Pile=rep(
@@ -58,26 +64,26 @@ while(TRUE){
            Strategies_Counts[Hand%in%Rows,
                              (Revealed_Dealer_Hand):=lapply(.SD,
                                                             function(y){
-                                                              as.numeric(y)+1
+                                                              sum(as.numeric(y), 1, na.rm=TRUE)
                                                             }),
                              .SDcols=c(Revealed_Dealer_Hand)]
            Strategies_Volumes[Hand%in%Rows,
                               (Revealed_Dealer_Hand):=lapply(.SD,
                                                              function(y){
-                                                               as.numeric(y)+1
+                                                               sum(as.numeric(y), 1, na.rm=TRUE)
                                                              }),
                               .SDcols=c(Revealed_Dealer_Hand)]
            
            Strategies_Wins[Hand%in%Rows,
                            (Revealed_Dealer_Hand):=lapply(.SD,
                                                           function(y){
-                                                            as.numeric(y)+Win_Temp
+                                                            sum(as.numeric(y), Win_Temp, na.rm=TRUE)
                                                           }),
                            .SDcols=c(Revealed_Dealer_Hand)]
            Strategies_Draws[Hand%in%Rows,
                             (Revealed_Dealer_Hand):=lapply(.SD,
                                                            function(y){
-                                                             as.numeric(y)+Draw_Temp
+                                                             sum(as.numeric(y), Draw_Temp, na.rm=TRUE)
                                                            }),
                             .SDcols=c(Revealed_Dealer_Hand)]
            # No Strategies_Loses
@@ -86,7 +92,7 @@ while(TRUE){
            Strategies_S_Profits[Hand%in%Rows,
                                 (Revealed_Dealer_Hand):=lapply(.SD,
                                                                function(y){
-                                                                 as.numeric(y)+Profit_Temp
+                                                                 sum(as.numeric(y), Profit_Temp, na.rm=TRUE)
                                                                }),
                                 .SDcols=c(Revealed_Dealer_Hand)]
            
@@ -110,8 +116,10 @@ while(TRUE){
                Dealer_Hand=paste(sort(Dealer_Hand, decreasing=TRUE), collapse=","),
                Result=Result_Temp,
                Profit=Profit_Temp,
-               Revealed_Dealer_Hand=Revealed_Dealer_Hand
+               Revealed_Dealer_Hand=Revealed_Dealer_Hand,
+               Row="A,10"
              )
+             
              Betting_Results=rbind(Betting_Results,
                                    Results)
            }
@@ -308,7 +316,7 @@ while(TRUE){
   Possible_Moves[, Pre_Dealer_Hand:=rep(list(Dealer_Hand),
                                         nrow(Possible_Moves))]
   
-  Results=cbind(
+  Results_Original=cbind(
     Possible_Moves,
     do.call(
       rbind,
@@ -324,10 +332,32 @@ while(TRUE){
     Revealed_Dealer_Hand
   )
   
+  Results_Original[,
+                   Row:=sapply(Results_Original[, Pre_Hand],
+                               function(x){
+                                 if(length(x)==2 &
+                                    is.pair(x)){
+                                   Row=paste0(sort(x, decreasing=TRUE), collapse=",")
+                                 }else if(length(x)==2 &
+                                          is.A(x)){
+                                   Row=paste0(sort(x, decreasing=TRUE), collapse=",")
+                                 }else if(length(x)==2 &
+                                          !is.pair(x) &
+                                          !is.A(x)){
+                                   Row=Value_Calculator(x)
+                                 }else if(length(x)>2){
+                                   Row=Value_Calculator(x)
+                                 }
+                                 Row
+                               })
+  ]
+  
+  Results=copy(Results_Original)
+  
   # Simulation
   # record simulation result
   if(Simulation){
-    # find the last nodes
+    # find the last nodes if not Split
     Which_Last_Nodes=c()
     for(Result_ind in 1:nrow(Results)){
       Branch_Temp=Results[Result_ind, Branch]
@@ -339,6 +369,7 @@ while(TRUE){
       }
     }
     Results=Results[Which_Last_Nodes, ]
+    
     
     Results[Strategy%in%c("Origin",
                           "Stand",
@@ -374,10 +405,15 @@ while(TRUE){
     
     Betting_Results=rbind(Betting_Results,
                           Results)
-    if(nrow(Betting_Results[is.na(Profit),])>0){
-      stop()
-    }
     
+    # if(nrow(Betting_Results[is.na(Profit),])>0){
+    #   stop()
+    # }
+    
+    # Results_Original will be used to record aggregate information
+    if("Split"%in%Results_Original$Strategy){
+      Results=copy(Results_Original)
+    }
   }
   
   # remove the first row if no strategy is implemented to the initial hand
@@ -392,24 +428,6 @@ while(TRUE){
   }
   Results[, is.A:=lapply(.SD, function(x){lapply(x, is.A)}), .SDcols="Pre_Hand"]
   Results[, is.pair:=lapply(.SD, function(x){lapply(x, is.pair)}), .SDcols="Pre_Hand"]
-  
-  # Row
-  Results[lengths(Pre_Hand)==2 &
-            is.pair==TRUE,
-          Row:=lapply(.SD, function(x){lapply(x, function(x){paste0(sort(x, decreasing=TRUE), collapse=",")})}),
-          .SDcols="Pre_Hand"]
-  Results[lengths(Pre_Hand)==2 &
-            is.A==TRUE,
-          Row:=lapply(.SD, function(x){lapply(x, function(x){paste0(sort(x, decreasing=TRUE), collapse=",")})}),
-          .SDcols="Pre_Hand"]
-  Results[lengths(Pre_Hand)==2 &
-            is.A==FALSE &
-            is.pair==FALSE,
-          Row:=lapply(.SD, function(x){lapply(x, function(x){Value_Calculator(x)})}),
-          .SDcols="Pre_Hand"]
-  Results[lengths(Pre_Hand)>2,
-          Row:=lapply(.SD, function(x){lapply(x, function(x){Value_Calculator(x)})}),
-          .SDcols="Pre_Hand"]
   
   # if(sum(unlist(lapply(Results$Row, is.null)))>0){
   #   print(Results[unlist(lapply(Results$Row, is.null)), ])
@@ -541,22 +559,22 @@ while(TRUE){
                                     Depth==Target_Dept, ]
         Profit_Temp=Results_Temp[grepl(Branch_Temp,
                                        substr(Branch, 0, nchar(Branch_Temp)),
-                                       fixed=TRUE)][, sum(Profit, na.rm=T)]
+                                       fixed=TRUE)][, sum(Profit, na.rm=TRUE)]
         Volume_Temp=Results_Temp[grepl(Branch_Temp,
                                        substr(Branch, 0, nchar(Branch_Temp)),
-                                       fixed=TRUE)][, sum(Volume, na.rm=T)]
+                                       fixed=TRUE)][, sum(Volume, na.rm=TRUE)]
         Win_Temp=Results_Temp[grepl(Branch_Temp,
                                     substr(Branch, 0, nchar(Branch_Temp)),
-                                    fixed=TRUE)][, sum(Win, na.rm=T)]
+                                    fixed=TRUE)][, sum(Win, na.rm=TRUE)]
         Draw_Temp=Results_Temp[grepl(Branch_Temp,
                                      substr(Branch, 0, nchar(Branch_Temp)),
-                                     fixed=TRUE)][, sum(Draw, na.rm=T)]
+                                     fixed=TRUE)][, sum(Draw, na.rm=TRUE)]
         Lose_Temp=Results_Temp[grepl(Branch_Temp,
                                      substr(Branch, 0, nchar(Branch_Temp)),
-                                     fixed=TRUE)][, sum(Lose, na.rm=T)]
+                                     fixed=TRUE)][, sum(Lose, na.rm=TRUE)]
         Bust_Temp=Results_Temp[grepl(Branch_Temp,
                                      substr(Branch, 0, nchar(Branch_Temp)),
-                                     fixed=TRUE)][, sum(Bust, na.rm=T)]
+                                     fixed=TRUE)][, sum(Bust, na.rm=TRUE)]
         Results[Branch==Branch_Temp, `:=`(Profit=Profit_Temp,
                                           Volume=Volume_Temp,
                                           Win=Win_Temp,
@@ -589,62 +607,62 @@ while(TRUE){
         Strategies_Counts[Hand%in%x$Row,
                           (Revealed_Dealer_Hand):=lapply(.SD,
                                                          function(y){
-                                                           as.numeric(y)+1
+                                                           sum(as.numeric(y), 1, na.rm=TRUE)
                                                          }),
                           .SDcols=c(Revealed_Dealer_Hand)]
         Strategies_Volumes[Hand%in%x$Row,
                            (Revealed_Dealer_Hand):=lapply(.SD,
                                                           function(y){
-                                                            as.numeric(y)+x$Volume
+                                                            sum(as.numeric(y), x$Volume, na.rm=TRUE)
                                                           }),
                            .SDcols=c(Revealed_Dealer_Hand)]
         Strategies_Wins[Hand%in%x$Row,
                         (Revealed_Dealer_Hand):=lapply(.SD,
                                                        function(y){
-                                                         as.numeric(y)+x$Win
+                                                         sum(as.numeric(y), x$Win, na.rm=TRUE)
                                                        }),
                         .SDcols=c(Revealed_Dealer_Hand)]
         Strategies_Draws[Hand%in%x$Row,
                          (Revealed_Dealer_Hand):=lapply(.SD,
                                                         function(y){
-                                                          as.numeric(y)+x$Draw
+                                                          sum(as.numeric(y), x$Draw, na.rm=TRUE)
                                                         }),
                          .SDcols=c(Revealed_Dealer_Hand)]
         Strategies_Loses[Hand%in%x$Row,
                          (Revealed_Dealer_Hand):=lapply(.SD,
                                                         function(y){
-                                                          as.numeric(y)+x$Lose
+                                                          sum(as.numeric(y), x$Lose, na.rm=TRUE)
                                                         }),
                          .SDcols=c(Revealed_Dealer_Hand)]
         Strategies_Busts[Hand%in%x$Row,
                          (Revealed_Dealer_Hand):=lapply(.SD,
                                                         function(y){
-                                                          as.numeric(y)+x$Bust
+                                                          sum(as.numeric(y), x$Bust, na.rm=TRUE)
                                                         }),
                          .SDcols=c(Revealed_Dealer_Hand)]
         switch(x$Strategy,
                "Hit"={Strategies_H_Profits[Hand%in%x$Row,
                                            (Revealed_Dealer_Hand):=lapply(.SD,
                                                                           function(y){
-                                                                            as.numeric(y)+x$Profit
+                                                                            sum(as.numeric(y), x$Profit, na.rm=TRUE)
                                                                           }),
                                            .SDcols=c(Revealed_Dealer_Hand)]},
                "Stand"={Strategies_S_Profits[Hand%in%x$Row,
                                              (Revealed_Dealer_Hand):=lapply(.SD,
                                                                             function(y){
-                                                                              as.numeric(y)+x$Profit
+                                                                              sum(as.numeric(y), x$Profit, na.rm=TRUE)
                                                                             }),
                                              .SDcols=c(Revealed_Dealer_Hand)]},
                "Double_Down"={Strategies_D_Profits[Hand%in%x$Row,
                                                    (Revealed_Dealer_Hand):=lapply(.SD,
                                                                                   function(y){
-                                                                                    as.numeric(y)+x$Profit
+                                                                                    sum(as.numeric(y), x$Profit, na.rm=TRUE)
                                                                                   }),
                                                    .SDcols=c(Revealed_Dealer_Hand)]},
                "Split"={Strategies_SP_Profits[Hand%in%x$Row,
                                               (Revealed_Dealer_Hand):=lapply(.SD,
                                                                              function(y){
-                                                                               as.numeric(y)+x$Profit
+                                                                               sum(as.numeric(y), x$Profit, na.rm=TRUE)
                                                                              }),
                                               .SDcols=c(Revealed_Dealer_Hand)]})
         

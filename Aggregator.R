@@ -30,7 +30,8 @@ Best_Strategies=as.data.table(
             function(a, b, c, d){
               Which_Strategy=which.max(c(a, b, c, d))
               if(length(Which_Strategy)==0){
-                "None"
+                # "None"
+                "S"
               }else{
                 switch(Which_Strategy,
                        "1"={"H"},
